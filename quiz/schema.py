@@ -35,7 +35,7 @@ class Query(graphene.ObjectType):
         return Question.objects.get(pk=id)
     
     def resolve_all_answers(root, info, id):
-        return Answer.objects.get(pk=id)
+        return Answer.objects.filter(question=id)
     
 
 schema = graphene.Schema(query=Query)
