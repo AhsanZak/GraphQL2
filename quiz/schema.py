@@ -36,6 +36,36 @@ class Query(graphene.ObjectType):
     
     def resolve_all_answers(root, info, id):
         return Answer.objects.filter(question=id)
-    
 
-schema = graphene.Schema(query=Query)
+class CategoryMutation(graphene.Mutation):
+    class Arguments:
+        name = graphene.String(required=True)
+
+    category = graphene.Field(CategoryType)
+
+    @classmethod
+    def mutate(cls, root, info, name):
+        category = Category(name=name)
+        category.save()
+        return CategoryMutation(category=category)
+    
+class QuizzesMutation(graphene.Mutation):
+    class Arguments:
+        title = graphene.String(required=True)
+        category = graphene.String(required=True)
+
+    quiz = graphene.Field(QuizzesType)
+
+    @classmethod
+    def mutate(cls, root, info, title, category):
+        category_q = Category.objects.get(name=category)
+        quiz = Quizzes(title=title, category=category_q)
+        quiz.save()
+        return QuizzesMutation(quiz=quiz)
+
+
+class Mutation(graphene.ObjectType):
+    update_category = CategoryMutation.Field()
+    update_quizzes = QuizzesMutation.Field()
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
