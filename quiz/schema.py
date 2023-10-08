@@ -28,11 +28,11 @@ class AnswerType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    all_questions = graphene.Field(QuestionType, id=graphene.Int())
+    all_questions = graphene.List(QuestionType)
     all_answers = graphene.List(AnswerType, id=graphene.Int())
 
-    def resolve_all_questions(root, info, id):
-        return Question.objects.get(pk=id)
+    def resolve_all_questions(root, info):
+        return Question.objects.all()
     
     def resolve_all_answers(root, info, id):
         return Answer.objects.filter(question=id)
